@@ -9,7 +9,7 @@ WIDTH, HEIGHT = 600, 400
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Aim Trainer')
 
-#Controls The Targets Popping Up And How Quick
+#Controls The Targets Event Popping Up And How Quick
 TARGET_INCREMENT = 300
 TARGET_EVENT = pygame.USEREVENT
 TARGET_PADDING = 30
@@ -57,13 +57,16 @@ def draw(win, targets):
 #Controls How The Aim Trainer Runs
 def main():
     run = True
-
     targets = []
+    clock = pygame.time.Clock()
 
     pygame.time.set_timer(TARGET_EVENT, TARGET_INCREMENT)
 
     #Allows You To Exit The Window
     while run:
+        #Runs The The Loop At 60 FPS
+        clock.tick(60)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -75,6 +78,15 @@ def main():
                 y = random.randint(TARGET_PADDING, HEIGHT - TARGET_PADDING)
                 target = Target(x, y)
                 targets.append(target)
+
+        #Updates The Targets And Removes Them Once They Reach Size 0 To Prevent Slowdown
+        for target in targets:
+            target.update()
+
+            if target.size <= 0:
+                targets.remove(target)
+        
+        draw(WIN, targets)
 
     pygame.quit()
 
