@@ -76,7 +76,18 @@ def format_time(secs):
 def draw_top_bar(win, elapsed_time, targets_pressed, misses):
     pygame.draw.rect(win, 'grey', (0, 0, WIDTH, TOP_BAR_HEIGHT))
     time_label = LABEL_FONT.render(f'Time: {format_time(elapsed_time)}', 1, 'black')
+    
+    speed = round(targets_pressed / elapsed_time, 1)
+    speed_label = LABEL_FONT.render(f'Speed: {speed} t/s', 1, 'black')
+
+    hits_label = LABEL_FONT.render(f'Hits: {targets_pressed}', 1, 'black')
+
+    lives_label = LABEL_FONT.render(f'Lives: {LIVES - misses}', 1, 'black')
+    
     win.blit(time_label, (5, 5))
+    win.blit(speed_label, (150, 5))
+    win.blit(hits_label, (300, 5))
+    win.blit(lives_label, (400, 5))
 
 #Controls How The Aim Trainer Runs
 def main():
