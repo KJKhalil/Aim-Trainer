@@ -46,6 +46,11 @@ class Target:
         pygame.draw.circle(win, self.COLOR, (self.x, self.y), self.size * 0.6)
         pygame.draw.circle(win, self.SECOND_COLOR, (self.x, self.y), self.size * 0.4)
 
+    #Detects If Your Mouse Is Over The Target To Click Or Miss
+    def collide(self, x, y):
+        dis = math.sqrt((x - self.x)**2 + (y - self.y)**2)
+        return dis <= self.size
+
 def draw(win, targets):
     win.fill(BG_COLOR)
 
@@ -60,12 +65,21 @@ def main():
     targets = []
     clock = pygame.time.Clock()
 
+    targets_pressed = 0
+    clicks = 0
+    misses = 0
+    start_time = time.time()
+
     pygame.time.set_timer(TARGET_EVENT, TARGET_INCREMENT)
 
     #Allows You To Exit The Window
     while run:
         #Runs The The Loop At 60 FPS
         clock.tick(60)
+        
+        click = False
+
+        mouse_pos = pygame.mouse.get_pos()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,12 +93,22 @@ def main():
                 target = Target(x, y)
                 targets.append(target)
 
-        #Updates The Targets And Removes Them Once They Reach Size 0 To Prevent Slowdown
+            #Allows You To Click The Target
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                click = True
+                clicks += 1
+
+        #Updates The Targets And Removes Them Once They Reach Size 0 Or Get Clicked
         for target in targets:
             target.update()
 
             if target.size <= 0:
                 targets.remove(target)
+                misses += 1
+
+            if click and target.collide(*mouse_pos):
+                targets.remove(target)
+                targets_pressed += 1
         
         draw(WIN, targets)
 
