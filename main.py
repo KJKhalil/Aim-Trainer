@@ -16,6 +16,13 @@ TARGET_PADDING = 30
 
 BG_COLOR = (0, 25, 40)
 
+#How Much Misses You Can Have Before The Game Ends
+LIVES = 5
+
+#This Is For The Top Bar That Will Keep Track Of Your Stats
+TOP_BAR_HEIGHT = 30
+LABEL_FONT = pygame.font.SysFont('comicsans', 15)
+
 #Controls The Targets Themselves
 class Target:
     MAX_SIZE = 25
@@ -57,7 +64,19 @@ def draw(win, targets):
     for target in targets:
         target.draw(win)
 
-    pygame.display.update()
+#This Controls How The Time Will Appear On The Top Bar
+def format_time(secs):
+    milli = math.floor(int(secs * 1000 % 1000) / 100)
+    seconds = int(round(secs % 60, 1))
+    minutes = int(secs // 60)
+
+    return f'{minutes:02d}:{seconds:02d}:{milli}'
+
+#This Is The Top Bar Where All The Stats Will Appear
+def draw_top_bar(win, elapsed_time, targets_pressed, misses):
+    pygame.draw.rect(win, 'grey', (0, 0, WIDTH, TOP_BAR_HEIGHT))
+    time_label = LABEL_FONT.render(f'Time: {format_time(elapsed_time)}', 1, 'black')
+    win.blit(time_label, (5, 5))
 
 #Controls How The Aim Trainer Runs
 def main():
@@ -78,8 +97,9 @@ def main():
         clock.tick(60)
         
         click = False
-
         mouse_pos = pygame.mouse.get_pos()
+
+        elapsed_time = time.time() - start_time
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -109,8 +129,13 @@ def main():
             if click and target.collide(*mouse_pos):
                 targets.remove(target)
                 targets_pressed += 1
+
+        if misses >= LIVES:
+            pass
         
         draw(WIN, targets)
+        draw_top_bar(WIN, elapsed_time, targets_pressed, misses)
+        pygame.display.update()
 
     pygame.quit()
 
