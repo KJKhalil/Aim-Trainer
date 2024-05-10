@@ -10,7 +10,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption('Aim Trainer')
 
 #Controls The Targets Event Popping Up And How Quick
-TARGET_INCREMENT = 300
+TARGET_INCREMENT = 500
 TARGET_EVENT = pygame.USEREVENT
 TARGET_PADDING = 30
 
@@ -91,24 +91,31 @@ def draw_top_bar(win, elapsed_time, targets_pressed, misses):
 
 #This Is An End Screen To Show The User Their Stats After They Run Out Of Lives
 def end_screen(win, elapsed_time, targets_pressed, clicks):
-    win.blit(BG_COLOR)
+    win.fill(BG_COLOR)
 
-    time_label = LABEL_FONT.render(f'Time: {format_time(elapsed_time)}', 1, 'black')
+    time_label = LABEL_FONT.render(f'Time: {format_time(elapsed_time)}', 1, 'white')
     
     speed = round(targets_pressed / elapsed_time, 1)
-    speed_label = LABEL_FONT.render(f'Speed: {speed} t/s', 1, 'black')
+    speed_label = LABEL_FONT.render(f'Speed: {speed} t/s', 1, 'white')
 
-    hits_label = LABEL_FONT.render(f'Hits: {targets_pressed}', 1, 'black')
+    hits_label = LABEL_FONT.render(f'Hits: {targets_pressed}', 1, 'white')
 
     accuracy = round(targets_pressed / clicks * 100, 1)
-    accuracy_label = LABEL_FONT.render(f'Accuracy: {accuracy}%', 1, 'black')
+    accuracy_label = LABEL_FONT.render(f'Accuracy: {accuracy}%', 1, 'white')
 
-    win.blit(time_label, (get_middle(time_label), 5))
-    win.blit(speed_label, (get_middle(speed_label), 5))
-    win.blit(hits_label, (get_middle(hits_label), 5))
-    win.blit(accuracy_label, (get_middle(accuracy_label), 5))
+    win.blit(time_label, (get_middle(time_label), 75))
+    win.blit(speed_label, (get_middle(speed_label), 150))
+    win.blit(hits_label, (get_middle(hits_label), 225))
+    win.blit(accuracy_label, (get_middle(accuracy_label), 300))
 
     pygame.display.update()
+
+    #Waits For You To Press Any Key Or Click X To Close The Window
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+                quit()
 
 #Calculates The Middle Of The Screen For Our End Screen
 def get_middle(surface):
@@ -127,7 +134,6 @@ def main():
 
     pygame.time.set_timer(TARGET_EVENT, TARGET_INCREMENT)
 
-    #Allows You To Exit The Window
     while run:
         #Runs The The Loop At 60 FPS
         clock.tick(60)
@@ -138,6 +144,8 @@ def main():
         elapsed_time = time.time() - start_time
 
         for event in pygame.event.get():
+            
+            #Allows You To Quit/Exit The Aim Trainer
             if event.type == pygame.QUIT:
                 run = False
                 break
@@ -166,8 +174,9 @@ def main():
                 targets.remove(target)
                 targets_pressed += 1
 
+        #Makes It So When You Run Out Of Lives You Get The End Screen
         if misses >= LIVES:
-            pass
+            end_screen(WIN, elapsed_time, targets_pressed, clicks)
         
         draw(WIN, targets)
         draw_top_bar(WIN, elapsed_time, targets_pressed, misses)
