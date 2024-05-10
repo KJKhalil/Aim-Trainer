@@ -144,8 +144,6 @@ def main():
         elapsed_time = time.time() - start_time
 
         for event in pygame.event.get():
-            
-            #Allows You To Quit/Exit The Aim Trainer
             if event.type == pygame.QUIT:
                 run = False
                 break
